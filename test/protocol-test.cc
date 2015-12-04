@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <memory>
 #include <fstream>
+#include <iostream>
 #include <sstream>
 #include <vector>
 #include <utility>
@@ -14,11 +15,13 @@
 #include "storm/internal/protocol.h"
 
 using std::remove;
+using std::ostream;
 using std::stringstream;
 using std::string;
 using std::unique_ptr;
 using std::vector;
 using std::move;
+using std::ios_base;
 using storm::TopologyContext;
 using storm::ProtocolException;
 using storm::Value;
@@ -64,6 +67,16 @@ TEST(ProtocolTest, EmitMessage) {
     root["object"].AddMember("message", "hello, world", json::g_allocator);
     EmitMessage(root, ss);
     ASSERT_EQ(root, NextMessage(ss));
+}
+
+TEST(ProtocolTest, EmitMessage_Illegal) {
+    json::Value root;
+    root.SetObject();
+    root.AddMember("count", json::Value(1), json::g_allocator);
+
+    stringstream illegal_ss;
+    illegal_ss.setstate(ostream::badbit);
+    ASSERT_THROW(EmitMessage(root, illegal_ss), ProtocolException);
 }
 
 TEST(ProtocolTest, EmitSync) {
