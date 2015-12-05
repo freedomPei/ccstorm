@@ -33,29 +33,19 @@ namespace json = storm::json;
 
 
 TEST(BoltTest, testExecute) {
-//      const string json { "{\n"
-//                                  "    \"a\": [2, 1]\n"
-//                          "}" };
-
-//      json::Document document(&g_allocator);
-//      document.Parse(json.c_str());
-
     Values values;
     values.SetArray();
     values.PushBack("2", g_allocator);
     values.PushBack("1", g_allocator);
+    Tuple tuple(values);
+    int i=0;
+    stringstream ss;
+    Values result;
 
-
-//      Values &a = document["a"];
-      Tuple tuple(values);
-      int i=0;
-      stringstream ss;
-      Values result;
-
-      i = (tuple.values()[0].GetInt() - tuple.values()[1].GetInt());
-      ss<<i;
-      ASSERT_EQ(1,i);
-      result.PushBack(ToValue(ss.str()), g_allocator);
-      result.PushBack(tuple->mutable_values()[2], g_allocator);
-      ASSERT_EQ(2,result.size());
+    i = (tuple.values()[0].GetInt() - tuple.values()[1].GetInt());
+    ss<<i;
+    ASSERT_EQ(1,i);
+    result.PushBack(ToValue(ss.str()), g_allocator);
+    result.PushBack(tuple->mutable_values()[2], g_allocator);
+    ASSERT_EQ(2,result.size());
 }

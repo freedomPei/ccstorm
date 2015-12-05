@@ -32,8 +32,7 @@ using namespace storm::internal::protocol;
 namespace json = storm::json;
 
 TEST(ComponentTest, Run_Legal) {
-//    stringstream ss;
-//    ss << "{\"count\":12}\nend\n"
+//    stringstream ss;//    ss << "{\"count\":12}\nend\n"
 //       << "{\"object\":{\"message\":\"hello, world\"}}\nend\n";
 //
 //    json::Value message = NextMessage(ss);
@@ -41,24 +40,13 @@ TEST(ComponentTest, Run_Legal) {
 //
 //    message = NextMessage(ss);
 //    ASSERT_STREQ("hello, world", message["object"]["message"].GetString());
+     stringstream ssin;
+//     stringstream ssout;
+//     ssin << "{\"count\":12}\nend\n";
+//     ssout << "{\"count\":15}\nend\n";
+     Component comp;
      stringstream ss;
-     ss << "{\"count\":12}\nend\n"
-        << "{\"object\":{\"message\":\"hello, world\"}}\nend\n";
-        unique_ptr<Adder> adder { new Adder() };
-        adder->Run(cin, cout);
-            const string legal {
-                    "{\"pidDir\":\"\\/tmp\","
-                            "\"context\":{"
-                            "\"task->component\":{"
-                            "\"1\":\"__acker\","
-                            "\"2\":\"kafka-reader\","
-                            "\"3\":\"rules-matcher\","
-                            "\"4\":\"sentry-query\","
-                            "\"5\":\"sentry-query-prepare\"},"
-                            "\"taskid\":3},"
-                            "\"conf\":{\"storm.id\":\"test-topology\"}}"
-            };
-            stringstream ss;
-            ss << legal << "\n" << "end" << "\n";
-            stringstream os;
+     json::Value msg = NextMessage(ss);
+     comp.Log("hello,world");
+
 }
