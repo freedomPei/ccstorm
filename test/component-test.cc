@@ -17,7 +17,6 @@
 
 using std::remove;
 using std::ostream;
-//using std::istream;
 using std::stringstream;
 using std::string;
 using std::unique_ptr;
@@ -32,7 +31,7 @@ using storm::g_allocator;
 using storm::Tuple;
 using namespace storm;
 using namespace storm::internal::protocol;
-//namespace json = storm::json;
+
 namespace {
     class TestBolt: public Component {
     public:

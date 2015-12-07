@@ -43,7 +43,6 @@ public:
         stringstream ss;
         ss << tuple->values()[0].GetInt() - tuple->values()[1].GetInt();
         result.PushBack(ToValue(ss.str()), g_allocator);
-//        result.PushBack(tuple->mutable_values()[2], g_allocator);
         oc().Emit("default", tuple, &result);
         oc().Ack(tuple);
     }
@@ -68,11 +67,4 @@ TEST(BoltTest, Execute) {
     result.SetArray();
     result.PushBack(ToValue(ss.str()), g_allocator);
     ASSERT_EQ(1,result.Size());
-
-//    stringstream boltin;
-//    stringstream boltout;
-//    boltin<<"hello";
-//    boltout<<"world";
-//    unique_ptr<testbolt::Minus> minus { new testbolt::Minus() };
-//    minus->Run(boltin, boltout);
 }
