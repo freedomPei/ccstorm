@@ -9,10 +9,11 @@
 #include <vector>
 #include <utility>
 #include "gtest/gtest.h"
-#include "storm/json.h"
 #include "storm/exception.h"
+#include "storm/topology-context.h"
 #include "storm/tuple.h"
-#include "storm/internal/protocol.h"
+#include "storm/storm.h"
+
 
 using std::remove;
 using std::ostream;
@@ -26,26 +27,52 @@ using storm::TopologyContext;
 using storm::ProtocolException;
 using storm::Value;
 using storm::Values;
+using storm::ToValue;
 using storm::g_allocator;
 using storm::Tuple;
-using namespace storm::internal::protocol;
-namespace json = storm::json;
 
+using namespace storm;
 
-TEST(BoltTest, testExecute) {
+namespace testbolt {
+
+class Minus: public Bolt {
+public:
+    virtual void Execute(Tuple *tuple) {
+        Values result;
+        result.SetArray();
+        stringstream ss;
+        ss << tuple->values()[0].GetInt() - tuple->values()[1].GetInt();
+        result.PushBack(ToValue(ss.str()), g_allocator);
+//        result.PushBack(tuple->mutable_values()[2], g_allocator);
+        oc().Emit("default", tuple, &result);
+        oc().Ack(tuple);
+    }
+
+private:
+};
+
+}  // anonymous namespace
+
+TEST(BoltTest, Execute) {
     Values values;
     values.SetArray();
-    values.PushBack("2", g_allocator);
-    values.PushBack("1", g_allocator);
-    Tuple tuple(values);
-    int i=0;
+    values.PushBack(2, g_allocator);
+    values.PushBack(1, g_allocator);
+    Tuple tuple(move(values));
+
     stringstream ss;
     Values result;
 
-    i = (tuple.values()[0].GetInt() - tuple.values()[1].GetInt());
-    ss<<i;
-    ASSERT_EQ(1,i);
+    int i = tuple.values()[0].GetInt() - tuple.values()[1].GetInt();
+    ss << i;
+    result.SetArray();
     result.PushBack(ToValue(ss.str()), g_allocator);
-    result.PushBack(tuple->mutable_values()[2], g_allocator);
-    ASSERT_EQ(2,result.size());
+    ASSERT_EQ(1,result.Size());
+
+//    stringstream boltin;
+//    stringstream boltout;
+//    boltin<<"hello";
+//    boltout<<"world";
+//    unique_ptr<testbolt::Minus> minus { new testbolt::Minus() };
+//    minus->Run(boltin, boltout);
 }

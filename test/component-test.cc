@@ -13,9 +13,11 @@
 #include "storm/exception.h"
 #include "storm/tuple.h"
 #include "storm/internal/protocol.h"
+#include "storm/component.h"
 
 using std::remove;
 using std::ostream;
+//using std::istream;
 using std::stringstream;
 using std::string;
 using std::unique_ptr;
@@ -28,25 +30,27 @@ using storm::Value;
 using storm::Values;
 using storm::g_allocator;
 using storm::Tuple;
+using namespace storm;
 using namespace storm::internal::protocol;
-namespace json = storm::json;
+//namespace json = storm::json;
+namespace {
+    class TestBolt: public Component {
+    public:
+        TestBolt(): Component() {}  // default constructor
+        virtual ~TestBolt() {}
+        void Log(const std::string &msg,std::ostream &_os) { internal::protocol::EmitLog(msg, _os); }
 
-TEST(ComponentTest, Run_Legal) {
-//    stringstream ss;//    ss << "{\"count\":12}\nend\n"
-//       << "{\"object\":{\"message\":\"hello, world\"}}\nend\n";
-//
-//    json::Value message = NextMessage(ss);
-//    ASSERT_EQ(12, message["count"].GetInt());
-//
-//    message = NextMessage(ss);
-//    ASSERT_STREQ("hello, world", message["object"]["message"].GetString());
-     stringstream ssin;
-//     stringstream ssout;
-//     ssin << "{\"count\":12}\nend\n";
-//     ssout << "{\"count\":15}\nend\n";
-     Component comp;
-     stringstream ss;
-     json::Value msg = NextMessage(ss);
-     comp.Log("hello,world");
+    };
 
+    TEST(ComponentTest, Run_Legal) {
+         stringstream ssin;
+         stringstream ssout;
+         ssin << "{\"count\":12}\nend\n";
+         TestBolt comp;
+
+         comp.Log("hello,world",ssout);
+         json::Value msg = NextMessage(ssout);
+         ASSERT_STREQ("hello,world",msg["msg"].GetString());
+    }
 }
+
